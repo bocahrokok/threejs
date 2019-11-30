@@ -1,7 +1,7 @@
 # threejs
 Grafika Komputer Project 
 
-#team 
+# team 
 Team: 
 Nurrizky Imani (18/429294/PA/18685)
 Tedjo gaharning radimas gilhardtara 18/429298/PA/18689
@@ -19,3 +19,7 @@ to see the code please open the index.html file; https://github.com/bocahrokok/t
 
 # video explanation;
 https://youtu.be/j5Wc7hq_WI0
+
+# Screenshot if theres no video
+
+https://drive.google.com/open?id=19w9OQHlRHgrUoalmweocThuTeS3Mqp0t
