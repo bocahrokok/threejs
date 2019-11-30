@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+
+  <body>
+    <script src="three.min.js"></script>
+    <script src="OrbitControls.js"></script>
+    <script>
+      let scene, camera, renderer, sphereCamera, rain, flash;
+      
+      function init() {
+        //import camera
+        camera = new THREE.PerspectiveCamera(
+          45,
+          window.innerWidth / window.innerHeight,
+          1,
+          9000
+        );
+        camera.position.set(0, 40, 1000);
+
+        //rendersize
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        //control mechanism
+        let controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableZoom = true;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 3.0;
+        controls.update();
+        controls.maxDistance = 4000;
+        controls.minDistance = 300;
+
+        //insert skybox
+        let urls = [
+          "posx.jpg",
+          "negx.jpg",
+          "posy.jpg",
+          "negy.jpg",
+          "posz.jpg",
+          "negz.jpg"
+        ];
+
+
+        //scene init
+        scene = new THREE.Scene();
+
+        //add the loader;
+        let loader = new THREE.CubeTextureLoader();
+        scene.background = loader.load(urls);
+
+        //add ambient light direct light
+        ambient = new THREE.AmbientLight(0x555555, 1.5);
+        scene.add(ambient);
+
+        directionalLight = new THREE.DirectionalLight(0xffeedd, 1.5);
+        directionalLight.position.set(19,0,10);
+        
+        //add spotlight:
+        var spotLight = new THREE.SpotLight( 0xffffff );
+            spotLight.position.set( 100, 1000, 100 );
+
+            spotLight.castShadow = true;
+
+            spotLight.shadow.mapSize.width = 1024;
+            spotLight.shadow.mapSize.height = 1024;
+
+            spotLight.shadow.camera.near = 500;
+            spotLight.shadow.camera.far = 4000;
+            spotLight.shadow.camera.fov = 30;
+
+        scene.add( spotLight );
+
+
+        //add reflection
+
+        sphereCamera = new THREE.CubeCamera(1, 1000, 500);
+        sphereCamera.position.set(0, 100, 0);
+        scene.add(sphereCamera);
+        let sphereMaterial = new THREE.MeshBasicMaterial({
+          envMap: sphereCamera.renderTarget
+        });
+
+        //add rain object
+
+        rainGeo = new THREE.Geometry();
+        for(let i=0;i<200000;i++) {
+          rainDrop = new THREE.Vector3(
+            (Math.random()- 0.5) * 5000 ,
+            (Math.random()- 0.5) * 5000 ,
+            (Math.random()- 0.5) * 5000
+          );
+          rainGeo.vertices.push(rainDrop);
+        }
+        rainMaterial = new THREE.PointsMaterial({
+          color: 0xaaaaaa,
+          size: 2.9,
+          transparent: true,
+          // map: sphereMaterial
+        });
+
+        rain = new THREE.Points(rainGeo,rainMaterial);
+        scene.add(rain);  
+
+        var geometry = new THREE.TorusGeometry( 150, 30, 160, 100 );
+        var torus = new THREE.Mesh( geometry, sphereMaterial );
+        torus.position.set(0, -100, 0);
+        scene.add( torus );
+
+        //cube dimension
+
+        for(var i=1; i<1500; i++){
+          let cubeCamera = new THREE.CubeGeometry(100,100,100);
+          let mirrorCube = new THREE.Mesh(cubeCamera, sphereMaterial);
+          mirrorCube.position.x = (Math.random()- 0.5) * 5000;
+          mirrorCube.position.y = (Math.random()- 0.5) * 5000;
+          mirrorCube.position.z = (Math.random()- 0.5) * 5000;
+          
+          scene.add(mirrorCube);
+        }
+
+        //mirrorsphere2 balls
+        let sphereGeo2 = new THREE.SphereGeometry(100, 50, 50);    
+         for(var i=1; i<100; i++){
+          let mirrorSphere2 = new THREE.Mesh(sphereGeo2, sphereMaterial);
+            mirrorSphere2.position.x = (Math.random()- 0.5) * 7000;
+            mirrorSphere2.position.y = (Math.random()- 0.5) * 7000;
+            mirrorSphere2.position.z = (Math.random()- 0.5) * 7000;
+          scene.add(mirrorSphere2);
+        }
+
+        //mirrorshpere diamond
+        
+        let sphereGeo = new THREE.SphereGeometry(200, 8, 2, 0, 6.3, 0, 3.1);
+        let mirrorSphere = new THREE.Mesh(sphereGeo, sphereMaterial);
+        mirrorSphere.position.set(0, 100, 0);
+        scene.add(mirrorSphere);
+
+        //mirrorsphere3 balls
+        let sphereGeo3 = new THREE.SphereGeometry(100, 50, 50);
+        let mirrorSphere3 = new THREE.Mesh(sphereGeo2, sphereMaterial);
+        mirrorSphere3.position.set(-1000, -500, 0);
+        scene.add(mirrorSphere3);
+
+        //mirrorsphere4
+        let sphereGeo4 = new THREE.SphereGeometry(200, 8, 1, 0, 6.3, 20, 3.1);
+        let mirrorSphere4 = new THREE.Mesh(sphereGeo4, sphereMaterial);
+        mirrorSphere4.position.set(0, 100, 1000);
+        scene.add(mirrorSphere4);
+
+        //mirrorsphere5
+        let sphereGeo5 = new THREE.SphereGeometry(200, 8, 1, 0, 6.3, 20, 3.1);
+        let mirrorSphere5 = new THREE.Mesh(sphereGeo4, sphereMaterial);
+        mirrorSphere5.position.set(0, 100, -1000);
+        scene.add(mirrorSphere5);
+
+        //mirrorsphere6
+        let sphereGeo6 = new THREE.SphereGeometry(200, 8, 1, 0, 6.3, 20, 3.1);
+        let mirrorSphere6 = new THREE.Mesh(sphereGeo4, sphereMaterial);
+        mirrorSphere6.position.set(-100, 1500, -500);
+        scene.add(mirrorSphere6);
+
+
+        
+        
+
+        //rendering
+        render();
+
+        //rendering function
+        function render() {
+          // rainGeo.vertices.forEach(p => {
+          //   p.velocity -= 0.1 + Math.random() * 0.1;
+          //   p.y += p.velocity;
+          //   if (p.y < -200) {
+          //     p.y = 200;
+          //     p.velocity = 0;
+          //   }
+          // });
+          // rainGeo.verticesNeedUpdate = true;
+          // rain.rotation.y +=0.002;
+
+          renderer.render(scene, camera);
+          sphereCamera.updateCubeMap(renderer, scene);
+          controls.update();
+          requestAnimationFrame(render);
+        }
+      }
+      //start init function
+      init();
+
+    </script>
+  </body>
+</html>
