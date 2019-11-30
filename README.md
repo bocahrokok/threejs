@@ -15,6 +15,7 @@ Sangalabror Pujianto 18/429296/PA/1868
 
 # explanation;
 we use three.js based on webgl which based on opengl
+to see the code please open the index.html file; https://github.com/bocahrokok/threejs/blob/master/index.html
 
 # video explanation;
 https://youtu.be/j5Wc7hq_WI0
